@@ -14,10 +14,24 @@ async def play(ctx):
         try:
             vc = await ctx.author.voice.channel.connect()
         except discord.errors.ClientException:
+            vc = ctx.voice_client
             print("[DEBUG] already in vc, playing music now.")
 
-        if not vc.is_playing():
+        if not vc.is_playing() and stream:
             await play_next_song(ctx, vc)
+        elif not stream and not vc.is_playing():
+            embed = discord.Embed(
+                title="Your playlist is empty.",
+                description="Use /play again once you added some songs.",
+                color=discord.Color.gold()
+            )
+            await ctx.send(embed=embed)
+        elif vc.is_playing():
+            embed = discord.Embed(
+                title="Bot already playing.",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
         
     else:
         embed = discord.Embed(
@@ -40,7 +54,7 @@ async def play_next_song(ctx, vc):
         try:
             vc.play(audio, after=lambda e: ctx.bot.loop.create_task(play_next_song(ctx, vc)))
         except Exception as e:
-            print(f"[DEBUG] error while playing using this sketchy loop function made by chatgpt: {e}")
+            print(f"[DEBUG] playlist empty")
 
         embed = discord.Embed(
             title="Song playing:",

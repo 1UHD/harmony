@@ -1,0 +1,9 @@
+.env
+.DS_Store
+
+node_modules
+bot/config.py
+bot/__pycache__/
+bot/cmds/__pycache__/
+audio/__pycache__/
+downloaded/*

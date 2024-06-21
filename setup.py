@@ -54,14 +54,14 @@ try:
 except:
     print("[SETUP] opus is missing. Install opus and re-run this script. (MacOS: brew install opus; Windows: install at https://opus-codec.org/)")
     sys.exit()
-"""
+
 try:
-    os.mkdir(__file__.replace("setup.py", "downloaded"))
+    os.mkdir(__file__.replace("\\", "/").replace("setup.py", "downloaded"))
     print("[SETUP] Created directory for songs.")
 except:
     print("[SETUP] Could not create directory for downloaded songs. If this fails, manually add a folder named downloaded in this directory. It should look like this:\nHarmony\n|-bot\n|-downloaded\n|-.gitignore\n|-setup.py\n|-README.md")
     sys.exit()
-"""
+
 
 token = input("Your bot token: ")
 try:

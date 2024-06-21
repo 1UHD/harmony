@@ -2,11 +2,23 @@ import discord
 import settings
 from discord.ext import commands
 from settings import stream
-import os
+import sys
+import platform
 
 if not discord.opus.is_loaded():
+    try:
+        if platform.system() == "Darwin":
+            discord.opus.load_opus("/opt/homebrew/Cellar/opus/1.5.2/lib/libopus.dylib")
+        elif platform.system() == "Windows":
+            discord.opus.load_opus()
+        else:
+            print("[DEBUG] you're on linux, figure it out how to load opus yourself (replace this (/bot/cmds/play.py) with discord.opus.load_opus('path to opus') and remove the sys.exit()), exiting...")
+            sys.exit()
+    except Exception as e:
+        print("[DEBUG] OPUS could not be loaded, exiting...")
+        sys.exit()
     #discord.opus.load_opus('libopus.so' if os.name != 'nt' else 'opus.dll')
-    discord.opus.load_opus("/opt/homebrew/Cellar/opus/1.5.2/lib/libopus.dylib")
+    
 
 @commands.hybrid_command(name="play", description="Joins your voice channel and starts playing your playlist.")
 async def play(ctx):

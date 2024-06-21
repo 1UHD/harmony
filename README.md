@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://imgur.com/a/Ukx4wj8" alt="harmony logo"/>
+    <img src="https://imgur.com/7Ohek0j.png" alt="harmony logo" width=150/>
     <h1>HARMONY
     <h3>free & open source Discord Music bot using yt-dlp
 </div>

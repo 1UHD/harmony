@@ -26,22 +26,26 @@ except ModuleNotFoundError:
 try:
     if platform.system() == "Darwin":
         discord.opus.load_opus("/opt/homebrew/Cellar/opus/1.5.2/lib/libopus.dylib")
+        print("[SETUP] opus works.")
     else:
         discord.opus.load_opus()
+        print("[SETUP] opus works.")
 except:
     print("[SETUP] opus is missing. Install opus and re-run this script. (MacOS: brew install opus; Windows: install at https://opus-codec.org/)")
     sys.exit()
+"""
 try:
     os.mkdir(__file__.replace("setup.py", "downloaded"))
     print("[SETUP] Created directory for songs.")
 except:
     print("[SETUP] Could not create directory for downloaded songs. If this fails, manually add a folder named downloaded in this directory. It should look like this:\nHarmony\n|-bot\n|-downloaded\n|-.gitignore\n|-setup.py\n|-README.md")
     sys.exit()
+"""
 
 token = input("Your bot token: ")
 try:
     configfile = open(__file__.replace("setup.py", "bot/config.py"), "w")
-    configfile.write(f"TOKEN = {token}")
+    configfile.write(f"TOKEN = '{token}'")
     configfile.close()
     print("[SETUP] Created setup file.")
 except:

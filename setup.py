@@ -6,6 +6,27 @@ def install(package):
     os.system(f"{sys.executable} -m pip install {package}")
 
 try:
+    import requests
+    print("[SETUP] requests is installed.")
+except ModuleNotFoundError:
+    install("requests")
+    print("[SETUP] Installed requests.")
+
+try:
+    import colorama
+    print("[SETUP] colorama is installed.")
+except ModuleNotFoundError:
+    install("colorama")
+    print("[SETUP] Installed colorama.")
+
+try:
+    import bs4
+    print("[SETUP] BeautifulSoup4 is installed.")
+except ModuleNotFoundError:
+    install("bs4")
+    print("[SETUP] Installed BeautifulSoup4.")
+
+try:
     import discord
     print("[SETUP] discord.py is installed.")
 except ModuleNotFoundError:
@@ -28,7 +49,7 @@ try:
         discord.opus.load_opus("/opt/homebrew/Cellar/opus/1.5.2/lib/libopus.dylib")
         print("[SETUP] opus works.")
     else:
-        discord.opus.load_opus()
+        discord.opus.load_opus("C:\\Windows\\System32\\opus.dll")
         print("[SETUP] opus works.")
 except:
     print("[SETUP] opus is missing. Install opus and re-run this script. (MacOS: brew install opus; Windows: install at https://opus-codec.org/)")
@@ -44,7 +65,7 @@ except:
 
 token = input("Your bot token: ")
 try:
-    configfile = open(__file__.replace("setup.py", "bot/config.py"), "w")
+    configfile = open(__file__.replace("\\", "/").replace("setup.py", "bot/config.py"), "w")
     configfile.write(f"TOKEN = '{token}'")
     configfile.close()
     print("[SETUP] Created setup file.")

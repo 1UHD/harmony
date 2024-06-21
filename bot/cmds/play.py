@@ -10,7 +10,7 @@ if not discord.opus.is_loaded():
         if platform.system() == "Darwin":
             discord.opus.load_opus("/opt/homebrew/Cellar/opus/1.5.2/lib/libopus.dylib")
         elif platform.system() == "Windows":
-            discord.opus.load_opus()
+            discord.opus.load_opus("C:\\Windows\\System32\\opus.dll")
         else:
             print("[DEBUG] you're on linux, figure it out how to load opus yourself (replace this (/bot/cmds/play.py) with discord.opus.load_opus('path to opus') and remove the sys.exit()), exiting...")
             sys.exit()

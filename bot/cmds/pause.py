@@ -4,8 +4,15 @@ from discord.ext import commands
 
 
 @commands.hybrid_command(name="pause", description="Pauses the currently playing song.")
-async def pause(ctx):   
-    vc = ctx.voice_client
+async def pause(ctx):
+    try:
+        vc = ctx.voice_client
+    except Exception as e:
+        embed = discord.Embed(
+            title="You're not in a voice call.",
+            color=discord.Color.red()
+        )
+        await ctx.send(embed=embed)
 
     if vc and vc.is_playing() and not settings.is_paused:
         vc.pause()

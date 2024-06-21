@@ -1,4 +1,5 @@
 import discord
+import settings
 from discord.ext import commands
 from settings import stream
 import os
@@ -18,6 +19,7 @@ async def play(ctx):
             print("[DEBUG] already in vc, playing music now.")
 
         if not vc.is_playing() and stream:
+            settings.playback = True
             await play_next_song(ctx, vc)
         elif not stream and not vc.is_playing():
             embed = discord.Embed(
@@ -41,6 +43,9 @@ async def play(ctx):
         await ctx.send(embed=embed)
         
 async def play_next_song(ctx, vc):
+    if not settings.playback:
+        return
+
     try:
         audio = discord.FFmpegPCMAudio(source=__file__.replace("bot/cmds/play.py", "downloaded/") + stream[0] + ".mp3")
     except Exception as e:
@@ -64,6 +69,9 @@ async def play_next_song(ctx, vc):
 
         del stream[0]
         await ctx.send(embed=embed)
+
+
+        
 
 async def setup(bot):
     bot.add_command(play)

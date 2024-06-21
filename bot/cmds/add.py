@@ -12,7 +12,6 @@ async def add(ctx, url):
     if already_downloaded[0]:
         video_name = already_downloaded[1]
         stream.append(video_name)
-        print(f"[DEBUG] playlist:" + "\n".join(i for i in stream))
 
         embed = discord.Embed(
             title="Added song to playlist.",

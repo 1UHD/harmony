@@ -12,22 +12,22 @@ class reloading_commands(commands.Cog):
         for cmd_file in CMDS_DIR.glob("*.py"):
             if cmd_file.name != "__init__.py":
                 await self.bot.unload_extension(f"cmds.{cmd_file.name[:-3]}")
-                print(f"[SYSTEM] Unloading command: {cmd_file.name[:-3]}")
+                print(f"[DEBUG] Unloading command: {cmd_file.name[:-3]}")
 
         for cog_file in COGS_DIR.glob("*.py"):
             if cog_file.name != "__init__.py":
                 await self.bot.unload_extension(f"cogs.{cog_file.name[:-3]}")
-                print(f"[SYSTEM] Unloading category: {cog_file.name[:-3]}")
+                print(f"[DEBUG] Unloading category: {cog_file.name[:-3]}")
 
         for cmd_file in CMDS_DIR.glob("*.py"):
             if cmd_file.name != "__init__.py":
                 await self.bot.load_extension(f"cmds.{cmd_file.name[:-3]}")
-                print(f"[SYSTEM] Reloading command: {cmd_file.name[:-3]}")
+                print(f"[DEBUG] Reloading command: {cmd_file.name[:-3]}")
 
         for cog_file in COGS_DIR.glob("*.py"):
             if cog_file.name != "__init__.py":
                 await self.bot.load_extension(f"cogs.{cog_file.name[:-3]}")
-                print(f"[SYSTEM] Reloading category: {cog_file.name[:-3]}")
+                print(f"[DEBUG] Reloading category: {cog_file.name[:-3]}")
         
         embed = discord.Embed(
             title="Reloaded.",

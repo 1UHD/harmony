@@ -12,7 +12,7 @@ def download_url(youtube_link: str) -> str:
                 'preferredcodec': 'mp3',
                 'preferredquality': f'{settings.bitrate}',
             }],
-            'outtmpl': f'{__file__.replace("audio/audio_download.py", "downloaded").replace("bot/audio_download.py", "downloaded")}/%(title)s.%(ext)s',
+            'outtmpl': f'{__file__.replace("\\", "/").replace("audio/audio_download.py", "downloaded").replace("bot/audio_download.py", "downloaded")}/%(title)s.%(ext)s',
         }
     try:
         with yt_dlp.YoutubeDL(ylp_settings) as ydl:
@@ -44,7 +44,7 @@ def check_if_already_downloaded(youtube_link: str) -> bool:
     if title == "unavailable":
         return [False, "unavailable"]
 
-    if os.path.exists(__file__.replace("audio/audio_download.py", "downloaded").replace("bot/audio_download.py", "downloaded") + "/" + title + ".mp3"):
+    if os.path.exists(__file__.replace("\\", "/").replace("audio/audio_download.py", "downloaded").replace("bot/audio_download.py", "downloaded") + "/" + title + ".mp3"):
         return [True, title]
     else:
         return [False, "unavailable"]

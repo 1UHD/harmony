@@ -35,7 +35,17 @@ try:
     os.mkdir(__file__.replace("setup.py", "downloaded"))
     print("[SETUP] Created directory for songs.")
 except:
-    print("[SETUP] Could not create directory for downloaded songs. If this fails, manually add a folder named downloaded in this directory. It should look like this:\nHarmony\n|-bot\n|-downloaded\n|-.gitignore\n|-setup.py")
+    print("[SETUP] Could not create directory for downloaded songs. If this fails, manually add a folder named downloaded in this directory. It should look like this:\nHarmony\n|-bot\n|-downloaded\n|-.gitignore\n|-setup.py\n|-README.md")
     sys.exit()
+
+token = input("Your bot token: ")
+try:
+    configfile = open(__file__.replace("setup.py", "bot/config.py"), "w")
+    configfile.write(f"TOKEN = {token}")
+    configfile.close()
+    print("[SETUP] Created setup file.")
+except:
+    print("[SETUP] Could not create config file. Create a file in the bot directory named config.py and write TOKEN = followed by your bot token.")
+
 
 print(f"[SETUP] You're good to go. Start the bot using {sys.executable} bot/main.py. If you experience any issues, dm me on Discord: kurtiscool")

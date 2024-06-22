@@ -5,10 +5,10 @@ from discord.ext import commands
 @commands.hybrid_command(name="stop", description="Stops the music.", aliases=["stfu"])
 async def stop(ctx):
     if ctx.voice_client:
+        settings.playback = False
+        settings.is_paused = False
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
-        settings.is_paused = False
-        settings.playback = False
         embed = discord.Embed(
             title="Stopped music.",
             color=discord.Color.magenta()

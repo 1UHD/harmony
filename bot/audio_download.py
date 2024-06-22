@@ -12,7 +12,7 @@ def download_url(youtube_link: str) -> str:
                 'preferredcodec': 'mp3',
                 'preferredquality': f'{settings.bitrate}',
             }],
-            'outtmpl': f'{__file__.replace("\\", "/").replace("audio/audio_download.py", "downloaded").replace("bot/audio_download.py", "downloaded")}/%(title)s.%(ext)s',
+            'outtmpl': __file__.replace("\\", "/").replace("audio/audio_download.py", "downloaded").replace("bot/audio_download.py", "downloaded") + "/%(title)s.%(ext)s",
         }
     try:
         with yt_dlp.YoutubeDL(ylp_settings) as ydl:

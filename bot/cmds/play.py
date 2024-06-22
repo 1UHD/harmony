@@ -59,7 +59,10 @@ async def play_next_song(ctx, vc):
         return
 
     try:
-        audio = discord.FFmpegPCMAudio(source=__file__.replace("bot/cmds/play.py", "downloaded/") + stream[0] + ".mp3")
+        if platform.system() == "Windows":
+            audio = discord.FFmpegPCMAudio(source=__file__.replace("\\", "/").replace("bot/cmds/play.py", "downloaded/") + stream[0] + ".mp3")
+        else:
+            audio = discord.FFmpegPCMAudio(source=__file__.replace("bot/cmds/play.py", "downloaded/") + stream[0] + ".mp3")
     except Exception as e:
         embed = discord.Embed(
             title="No songs are in queue.",

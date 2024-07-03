@@ -18,7 +18,6 @@ if not discord.opus.is_loaded():
         print("[DEBUG] OPUS could not be loaded, exiting...")
         sys.exit()
     #discord.opus.load_opus('libopus.so' if os.name != 'nt' else 'opus.dll')
-    
 
 @commands.hybrid_command(name="play", description="Joins your voice channel and starts playing your playlist.")
 async def play(ctx):
@@ -59,10 +58,12 @@ async def play_next_song(ctx, vc):
         return
 
     try:
-        if platform.system() == "Windows":
+        if not settings.is_looped:
             audio = discord.FFmpegPCMAudio(source=__file__.replace("\\", "/").replace("bot/cmds/play.py", "downloaded/") + stream[0] + ".mp3")
+            settings.currently_playing = stream[0]
+            del stream[0]
         else:
-            audio = discord.FFmpegPCMAudio(source=__file__.replace("bot/cmds/play.py", "downloaded/") + stream[0] + ".mp3")
+            audio = discord.FFmpegPCMAudio(source=__file__.replace("\\", "/").replace("bot/cmds/play.py", "downloaded/") + settings.currently_playing + ".mp3")
     except Exception as e:
         embed = discord.Embed(
             title="No songs are in queue.",
@@ -78,15 +79,12 @@ async def play_next_song(ctx, vc):
 
         embed = discord.Embed(
             title="Song playing:",
-            description=f"{stream[0]}",
+            description=f"{settings.currently_playing}",
             color=discord.Color.magenta()
         )
 
-        del stream[0]
         await ctx.send(embed=embed)
 
-
-        
 
 async def setup(bot):
     bot.add_command(play)

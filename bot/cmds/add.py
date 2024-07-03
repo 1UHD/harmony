@@ -1,6 +1,7 @@
-from audio_download import check_if_already_downloaded
-from audio_download import check_video_name
-from audio_download import download_url
+from cmds.utils.youtube_utils import check_if_already_downloaded
+from cmds.utils.youtube_utils import check_video_name
+from cmds.utils.youtube_utils import download_url
+from cmds.utils.youtube_utils import get_youtube_thumbnail
 from settings import bitrate
 from settings import stream
 import discord
@@ -15,9 +16,10 @@ async def add(ctx, url):
 
         embed = discord.Embed(
             title="Added song to playlist.",
-            description=f"Name: {video_name}\nBitrate: {bitrate}",
+            description=f"Name: {video_name}",
             color=discord.Color.magenta()
         )
+        embed.set_thumbnail(url=get_youtube_thumbnail(url))
         await ctx.send(embed=embed)
     else:
         embed = discord.Embed(
@@ -34,9 +36,10 @@ async def add(ctx, url):
 
             embed = discord.Embed(
                 title="Song has been downloaded.",
-                description=f"The song has been downloaded and added to your playlist.\nName: {video_name}\nBitrate: {bitrate}",
+                description=f"The song has been downloaded and added to your playlist.\nName: {video_name}",
                 color=discord.Color.magenta()
             )
+            embed.set_thumbnail(url=get_youtube_thumbnail(url))
             await ctx.send(embed=embed)
         elif rep == "unavailable":
             embed = discord.Embed(

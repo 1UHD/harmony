@@ -2,11 +2,6 @@ import pathlib
 import config
 
 TOKEN = config.TOKEN
-bitrate = 128
-#bitrate modes: high=192; medium=128; low=64
-stream = []
-is_paused = False
-playback = True
 
 BASE_DIR = pathlib.Path(__file__).parent
 CMDS_DIR = BASE_DIR / "cmds"
@@ -20,3 +15,12 @@ LOGO = """
 |_| |_|\\__,_|_|  |_| |_| |_|\\___/|_| |_|\\__, |
                                         |___/
 """
+
+bitrate = 128
+#bitrate modes: high=192; medium=128; low=64
+stream = []
+currently_playing = "Nothing"
+
+playback = True
+is_paused = False
+is_looped = False

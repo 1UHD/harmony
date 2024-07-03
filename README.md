@@ -5,7 +5,7 @@
 </div>
 
 ## Install
-Make sure to have Python installed. After install Python, you can clone this repository.
+Make sure to have Python installed. After installing Python, you can clone this repository.
 ```sh
 git clone https://github.com/1UHD/harmony.git
 ```

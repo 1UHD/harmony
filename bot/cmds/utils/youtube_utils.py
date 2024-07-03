@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from mutagen.mp3 import MP3
 import settings
 import requests
 import yt_dlp
@@ -52,3 +53,7 @@ def check_if_already_downloaded(youtube_link: str) -> bool:
 def get_youtube_thumbnail(youtube_link: str) -> str:
     video_id = youtube_link.replace("https://www.youtube.com/watch?v=", "")
     return f"http://img.youtube.com/vi/{video_id}/hqdefault.jpg"
+
+def get_video_length(name: str) -> int:
+    audio = MP3( __file__.replace("\\", "/").replace("bot/cmds/utils/youtube_utils.py", "downloaded/") + name + ".mp3")
+    return audio.info.length

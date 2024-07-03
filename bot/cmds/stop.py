@@ -7,6 +7,10 @@ async def stop(ctx):
     if ctx.voice_client:
         settings.playback = False
         settings.is_paused = False
+        settings.is_looped = False
+        settings.time_elapsed = 0
+        settings.starting_time = 0
+        
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
         embed = discord.Embed(

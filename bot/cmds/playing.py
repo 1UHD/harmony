@@ -2,24 +2,31 @@ import discord
 from discord.ext import commands
 import settings
 from cmds.utils.control_utils import send_error_embed
+from cmds.utils.youtube_utils import get_video_length
+import time
+import math
 
-#TODO: make this work (I am lacking WiFi to look up any tutorial. I also don't even know if it works or not, but my guts tell me it doesn't.)
-class Buttons(discord.ui.View):
-    def __init__(self, embed):
-        self.embed = embed
+def seconds_to_time_format(seconds):
+    minutes, seconds = divmod(seconds, 60)
+    return f"{minutes}:{seconds:02}"
 
-    @discord.ui.button(label=":pause_button:", style=discord.ButtonStyle.green)
-    async def pause(self, button: discord.ui.Button, interaction: discord.Interaction):
-        if not settings.is_paused:
-            interaction.voice_client.pause()
-            button.label = ":arrow_forward:"
-            settings.is_paused = True
-        else:
-            interaction.voice_client.resume()
-            button.label = ":pause_button:"
-            settings.is_paused = False
+def get_elapsed_time_string():
+    elapsed_time = 0
+    song_length = math.ceil(get_video_length(settings.currently_playing))
 
-        await interaction.message.edit(embed=self.embed, view=self)
+    if settings.is_paused:
+        elapsed_time = settings.time_elapsed
+    else:
+        elapsed_time = round(time.time() - settings.starting_time) + settings.time_elapsed
+
+    try:
+        progress = ["-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"]
+        progress_index = math.ceil(elapsed_time / (song_length / 15)) - 1
+        progress[progress_index] = "o"
+
+        return f"{seconds_to_time_format(elapsed_time)} {''.join(i for i in progress)} {seconds_to_time_format(song_length)}"
+    except Exception as e:
+        return f"ERROR: elapsed: {elapsed_time} | length: {song_length}"
 
 
 @commands.hybrid_command(name="playing", description="Gives information on the song that is currently playing.")
@@ -28,17 +35,15 @@ async def playing(ctx):
         await send_error_embed(ctx, "Bot is not in a voice channel.")
         return
 
-    if not ctx.voice_client.is_playing():
+    if not ctx.voice_client.is_playing() and not settings.is_paused:
         await send_error_embed(ctx, "No song is playing.")
         return
 
     embed = discord.Embed(
         title="Currently playing:",
-        description=f"**{settings.currently_playing}**\n_Loop:_ {'yes' if settings.is_looped else 'no'} | _Paused:_ {'yes' if settings.is_paused else 'no'}",
+        description=f"**{settings.currently_playing}**\n{get_elapsed_time_string()}\n_Loop:_ {'yes' if settings.is_looped else 'no'} | _Paused:_ {'yes' if settings.is_paused else 'no'}",
         color=discord.Color.magenta()
     )
-
-    #view = Buttons(embed)
 
     await ctx.send(embed=embed)
 

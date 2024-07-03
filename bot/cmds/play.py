@@ -3,6 +3,7 @@ import settings
 from discord.ext import commands
 from settings import stream
 import sys
+import time
 import platform
 
 if not discord.opus.is_loaded():
@@ -73,6 +74,8 @@ async def play_next_song(ctx, vc):
 
     if not vc.is_playing():
         try:
+            settings.starting_time = time.time()
+            settings.time_elapsed = 0
             vc.play(audio, after=lambda e: ctx.bot.loop.create_task(play_next_song(ctx, vc)))
         except Exception as e:
             print(f"[DEBUG] playlist empty")

@@ -1,41 +1,35 @@
 import discord
-import settings
 from discord.ext import commands
-
+import settings
+import time
+from cmds.utils.control_utils import *
 
 @commands.hybrid_command(name="pause", description="Pauses the currently playing song.")
 async def pause(ctx):
-    try:
-        vc = ctx.voice_client
-    except Exception as e:
-        embed = discord.Embed(
-            title="You're not in a voice call.",
-            color=discord.Color.red()
-        )
-        await ctx.send(embed=embed)
+    if not ctx.voice_client:
+        await send_error_embed(ctx, "Bot is not in a voice channel.")
+        return
 
-    if vc and vc.is_playing() and not settings.is_paused:
-        vc.pause()
+    if not ctx.voice_client.is_playing() and not settings.is_paused:
+        await send_error_embed(ctx, "No song is playing.")
+        return
+
+    if not settings.is_paused:        
+        ctx.voice_client.pause()
         settings.is_paused = True
-        embed = discord.Embed(
-            title="Song has been paused.",
-            color=discord.Color.magenta()
-        )
-        await ctx.send(embed=embed)
-    elif settings.is_paused:
-        vc.resume()
-        settings.is_paused = False
-        embed = discord.Embed(
-            title="The song has been resumed.",
-            color=discord.Color.magenta()
-        )
-        await ctx.send(embed=embed)
+
+        now = time.time()
+        settings.time_elapsed = round(now - settings.starting_time)
+        settings.starting_time = now
+
+        await send_success_embed(ctx, "Song has been paused.")
     else:
-        embed = discord.Embed(
-            title="No music is playing.",
-            color=discord.Color.red()
-        )
-        await ctx.send(embed=embed)
+        ctx.voice_client.resume()
+        settings.is_paused = False
+
+        settings.starting_time = time.time()
+
+        await send_success_embed(ctx, "Song has been resumed.")
 
 async def setup(bot):
     bot.add_command(pause)

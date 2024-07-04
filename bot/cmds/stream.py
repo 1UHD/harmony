@@ -2,12 +2,12 @@ import discord
 import settings
 from discord.ext import commands
 
-@commands.hybrid_command(name="playlist", description="Provides a list of queued songs.", aliases=["stream"])
-async def playlist(ctx):
+@commands.hybrid_command(name="stream", description="Provides a list of queued songs.")
+async def stream(ctx):
     if settings.stream:
         embed = discord.Embed(
             title="Current playlist:",
-            description="\n".join(f"- {i}" for i in settings.stream),
+            description=f"**{settings.currently_playing}**" + "".join('_(Looped)_\n' if settings.is_looped else '\n') + "\n".join(f"- {i}" for i in settings.stream),
             color=discord.Color.magenta()
         )
         await ctx.send(embed=embed)
@@ -19,4 +19,4 @@ async def playlist(ctx):
         await ctx.send(embed=embed)
 
 async def setup(bot):
-    bot.add_command(playlist)
+    bot.add_command(stream)

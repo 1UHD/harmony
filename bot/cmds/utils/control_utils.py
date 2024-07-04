@@ -16,6 +16,13 @@ async def send_success_embed(ctx, title: str) -> None:
     )
     await ctx.send(embed=embed)
 
+async def send_progress_embed(ctx, title: str) -> None:
+    embed = discord.Embed(
+        title=title,
+        color=discord.Color.gold()
+    )
+    await ctx.send(embed=embed)
+
 async def check_for_voice(ctx) -> bool:
     if not ctx.author.voice:
         embed = discord.Embed(

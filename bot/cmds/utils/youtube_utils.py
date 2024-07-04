@@ -4,6 +4,7 @@ import settings
 import requests
 import yt_dlp
 import os
+import re
 
 def download_url(youtube_link: str) -> str:
     ylp_settings = {
@@ -57,3 +58,22 @@ def get_youtube_thumbnail(youtube_link: str) -> str:
 def get_video_length(name: str) -> int:
     audio = MP3( __file__.replace("\\", "/").replace("bot/cmds/utils/youtube_utils.py", "downloaded/") + name + ".mp3")
     return audio.info.length
+
+def search_youtube(query):
+    query = query.replace(' ', '+')
+    url = f"https://www.youtube.com/results?search_query={query}"
+    response = requests.get(url)
+    
+    if response.status_code != 200:
+        print("Failed to retrieve search results")
+        return None
+    
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    scriptpart = soup.find_all("script")
+    video_ids = []
+
+    matches = re.findall(r'"videoId":"(.*?)"', str(scriptpart))
+    video_ids.extend(matches)
+
+    return f"https://www.youtube.com/watch?v={video_ids[0]}"

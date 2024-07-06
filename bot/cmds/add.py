@@ -1,60 +1,103 @@
-from cmds.utils.youtube_utils import check_if_already_downloaded
-from cmds.utils.youtube_utils import check_video_name
-from cmds.utils.youtube_utils import download_url
-from cmds.utils.youtube_utils import get_youtube_thumbnail
-from settings import bitrate
-from settings import stream
+from cmds.utils.youtube_utils import *
+from cmds.utils.control_utils import send_error_embed, send_progress_embed, send_success_embed
+from settings import bitrate, stream
 import discord
 from discord.ext import commands
 
-@commands.hybrid_command(name="add", description="Adds music to the current playlist")
-async def add(ctx, url):
+@commands.hybrid_group(name="add")
+async def add(ctx):
+    await ctx.send(embed=discord.Embed(
+        title="Wrong usage.",
+        description="Usage:\n/add youtube_url <url>\n/add search <title>",
+        color=discord.Color.red()
+    ))
+
+@add.command(name="youtube_url", description="Adds an audio via a YouTube url.")
+async def youtube_url(ctx, url):
+    
+    if settings.streaming:
+        video_name = check_video_name(url)
+        stream.append(video_name)
+        await send_success_embed(ctx, f"Added {video_name.split('|')[0]} to stream.")
+        return
+
     already_downloaded = check_if_already_downloaded(url)
+
     if already_downloaded[0]:
         video_name = already_downloaded[1]
         stream.append(video_name)
 
-        embed = discord.Embed(
-            title="Added song to playlist.",
-            description=f"Name: {video_name}",
-            color=discord.Color.magenta()
-        )
-        embed.set_thumbnail(url=get_youtube_thumbnail(url))
-        await ctx.send(embed=embed)
+        await send_success_embed(ctx, f"Added {video_name.split('|')[0]} to stream.")
+
     else:
-        embed = discord.Embed(
-            title="Downloading song...",
-            description=f"The song is being downloaded.\nBitrate: {bitrate}",
-            color=discord.Color.gold()
-        )
-        await ctx.send(embed=embed)
+        await send_progress_embed(ctx, f"Downloading song. Bitrate: {bitrate}")
 
         rep = download_url(url)
+
         if rep == "success":
             video_name = check_video_name(url)
             stream.append(video_name)
 
             embed = discord.Embed(
-                title="Song has been downloaded.",
-                description=f"The song has been downloaded and added to your playlist.\nName: {video_name}",
+                title="Song added to stream.",
+                description=f"{video_name.split('|')[0]}",
                 color=discord.Color.magenta()
             )
             embed.set_thumbnail(url=get_youtube_thumbnail(url))
             await ctx.send(embed=embed)
+
         elif rep == "unavailable":
-            embed = discord.Embed(
-                title="Video unavailable.",
-                description="This video is not available. Check the URL.",
-                color=discord.Color.red()
-            )
-            await ctx.send(embed=embed)
+            await send_error_embed(ctx, "Video couldn't be found.")
+            return
+
         else:
+            await send_error_embed(ctx, "An unknown error occured.")
+            return
+
+@add.command(name="search", description="Searches your title on YouTube and adds the first result.")
+async def search(ctx: commands.Context, title):
+    await send_progress_embed(ctx, f'Searching for "{title}"')
+
+    result = search_youtube(title)
+
+    if settings.streaming:
+        video_name = check_video_name(result)
+        stream.append(video_name)
+        await send_success_embed(ctx, f"Added {video_name.split('|')[0]} to stream.")
+        return
+
+    already_downloaded = check_if_already_downloaded(result)
+
+    if already_downloaded[0]:
+        video_name = already_downloaded[1]
+        stream.append(video_name)
+
+        await send_success_embed(ctx, f"Added {video_name.split('|')[0]} to stream.")
+
+    else:
+        await send_progress_embed(ctx, f"Downloading song. Bitrate: {bitrate}")
+
+        rep = download_url(result)
+
+        if rep == "success":
+            video_name = check_video_name(result)
+            stream.append(video_name)
+
             embed = discord.Embed(
-                title="Unexpected error.",
-                description="An unexpected error has occured.",
-                color=discord.Color.red()
+                title="Song added to stream.",
+                description=f"{video_name.split('|')[0]}",
+                color=discord.Color.magenta()
             )
+            embed.set_thumbnail(url=get_youtube_thumbnail(result))
             await ctx.send(embed=embed)
+
+        elif rep == "unavailable":
+            await send_error_embed(ctx, "Video couldn't be found.")
+            return
+
+        else:
+            await send_error_embed(ctx, "An unknown error occured.")
+            return
 
 async def setup(bot):
     bot.add_command(add)

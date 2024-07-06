@@ -1,12 +1,13 @@
 import discord
-import settings
 from discord.ext import commands
-from settings import stream
+import settings
 import sys
 import time
 import platform
+from cmds.utils.control_utils import *
+from cmds.utils.youtube_utils import stream_audio
 
-if not discord.opus.is_loaded():
+def load_opus():
     try:
         if platform.system() == "Darwin":
             discord.opus.load_opus("/opt/homebrew/Cellar/opus/1.5.2/lib/libopus.dylib")
@@ -18,76 +19,96 @@ if not discord.opus.is_loaded():
     except Exception as e:
         print("[DEBUG] OPUS could not be loaded, exiting...")
         sys.exit()
-    #discord.opus.load_opus('libopus.so' if os.name != 'nt' else 'opus.dll')
 
-@commands.hybrid_command(name="play", description="Joins your voice channel and starts playing your playlist.")
-async def play(ctx):
+load_opus()
 
-    if ctx.author.voice:
-        try:
-            vc = await ctx.author.voice.channel.connect()
-        except discord.errors.ClientException:
-            vc = ctx.voice_client
-            print("[DEBUG] already in vc, playing music now.")
+async def stream_next_song(ctx, vc):
+    if not settings.playback:
+        return
 
-        if not vc.is_playing() and stream:
-            settings.playback = True
-            await play_next_song(ctx, vc)
-        elif not stream and not vc.is_playing():
-            embed = discord.Embed(
-                title="Your playlist is empty.",
-                description="Use /play again once you added some songs.",
-                color=discord.Color.gold()
-            )
-            await ctx.send(embed=embed)
-        elif vc.is_playing():
-            embed = discord.Embed(
-                title="Bot already playing.",
-                color=discord.Color.red()
-            )
-            await ctx.send(embed=embed)
-        
+    if not settings.stream:
+        await send_error_embed(ctx, "Stopping. No songs in queue.")
+        return
+
+    if not settings.is_looped:
+        audio = stream_audio(f"https://www.youtube.com/watch?v={settings.stream[0].split('|')[1]}")
+        settings.currently_playing = settings.stream[0]
+        del settings.stream[0]
     else:
-        embed = discord.Embed(
-            title="You're not in a voice call.",
-            color=discord.Color.red()
-        )
-        await ctx.send(embed=embed)
-        
+        audio = stream_audio(f"https://www.youtube.com/watch?v={settings.currently_playing.split('|')[1]}")
+
+    if not vc.is_playing():
+        settings.starting_time = time.time()
+        settings.time_elapsed = 0
+        vc.play(audio, after=lambda e: ctx.bot.loop.create_task(play_next_song(ctx, vc)))
+
+    embed = discord.Embed(
+        title="Song playing:",
+        description=f"{settings.currently_playing.split('|')[0]}",
+        color=discord.Color.magenta()
+    )
+
+    await ctx.send(embed=embed)
+
 async def play_next_song(ctx, vc):
     if not settings.playback:
         return
 
-    try:
-        if not settings.is_looped:
-            audio = discord.FFmpegPCMAudio(source=__file__.replace("\\", "/").replace("bot/cmds/play.py", "downloaded/") + stream[0] + ".mp3")
-            settings.currently_playing = stream[0]
-            del stream[0]
-        else:
-            audio = discord.FFmpegPCMAudio(source=__file__.replace("\\", "/").replace("bot/cmds/play.py", "downloaded/") + settings.currently_playing + ".mp3")
-    except Exception as e:
-        embed = discord.Embed(
-            title="No songs are in queue.",
-            color=discord.Color.red()
-        )
-        await ctx.send(embed=embed)
+    if not settings.stream:
+        await send_error_embed(ctx, "Stopping. No songs in queue.")
+        return
+
+    if not settings.is_looped:
+        audio = discord.FFmpegPCMAudio(source=__file__.replace("\\", "/").replace("bot/cmds/play2.py", "downloaded/") + settings.stream[0] + ".mp3")
+        settings.currently_playing = settings.stream[0]
+        del settings.stream[0]
+    else:
+        audio = discord.FFmpegPCMAudio(source=__file__.replace("\\", "/").replace("bot/cmds/play2.py", "downloaded/") + settings.currently_playing + ".mp3")
 
     if not vc.is_playing():
-        try:
-            settings.starting_time = time.time()
-            settings.time_elapsed = 0
-            vc.play(audio, after=lambda e: ctx.bot.loop.create_task(play_next_song(ctx, vc)))
-        except Exception as e:
-            print(f"[DEBUG] playlist empty")
+        settings.starting_time = time.time()
+        settings.time_elapsed = 0
+        vc.play(audio, after=lambda e: ctx.bot.loop.create_task(stream_next_song(ctx, vc)))
 
         embed = discord.Embed(
             title="Song playing:",
-            description=f"{settings.currently_playing}",
+            description=f"{settings.currently_playing.split('|')[0]}",
             color=discord.Color.magenta()
         )
 
         await ctx.send(embed=embed)
 
+@commands.hybrid_command(name="play", description="Joins your voice channel and starts playing your playlist.")
+async def play(ctx):
+    if not ctx.author.voice:
+        await send_error_embed(ctx, "You're not in a voice channel.")
+        return
+
+    if not ctx.voice_client:
+        await ctx.author.voice.channel.connect()
+
+    """
+    if ctx.voice_client is not ctx.author.voice.channel:
+        await ctx.author.voice.channel.connect()
+    """
+
+    if not ctx.voice_client.is_playing() and settings.stream:
+        settings.playback = True
+
+        if not settings.streaming:
+            await play_next_song(ctx, ctx.voice_client)
+        
+        else:
+            await stream_next_song(ctx, ctx.voice_client)
+
+
+    elif not ctx.voice_client.is_playing() and not settings.stream:
+        await send_progress_embed(ctx, "Playlist is empty.")
+        return
+
+    else:
+        await send_error_embed(ctx, "Bot is already playing.")
+        return
 
 async def setup(bot):
     bot.add_command(play)

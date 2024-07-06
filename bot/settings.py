@@ -24,6 +24,7 @@ bitrate = 128
 stream = []
 currently_playing = "Nothing"
 
+streaming = True
 playback = True
 is_paused = False
 is_looped = False

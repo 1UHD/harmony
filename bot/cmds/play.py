@@ -14,7 +14,7 @@ def load_opus():
         elif platform.system() == "Windows":
             discord.opus.load_opus("C:\\Windows\\System32\\opus.dll")
         else:
-            print("[DEBUG] you're on linux, figure it out how to load opus yourself (replace this (/bot/cmds/play.py) with discord.opus.load_opus('path to opus') and remove the sys.exit()), exiting...")
+            print("[DEBUG] you're on linux, figure it out how to load opus yourself (replace this (in /bot/cmds/play.py) with discord.opus.load_opus('path to opus') and remove the sys.exit()), exiting...")
             sys.exit()
     except Exception as e:
         print("[DEBUG] OPUS could not be loaded, exiting...")
@@ -30,12 +30,24 @@ async def stream_next_song(ctx, vc):
         await send_error_embed(ctx, "Stopping. No songs in queue.")
         return
 
+    if settings.bad_connection_mode:
+        message = await ctx.send(embed=discord.Embed(
+            title="Song is loading.",
+            description="This might take a while. Bad connection mode is enabled.\n",
+            color=discord.Color.gold()
+        ))
+
     if not settings.is_looped:
-        audio = stream_audio(f"https://www.youtube.com/watch?v={settings.stream[0].split('|')[1]}")
+        d = stream_audio(f"https://www.youtube.com/watch?v={settings.stream[0].split('|')[1]}")
+        audio = d[0]
+        settings.video_length = d[1]
+
         settings.currently_playing = settings.stream[0]
         del settings.stream[0]
     else:
-        audio = stream_audio(f"https://www.youtube.com/watch?v={settings.currently_playing.split('|')[1]}")
+        d = stream_audio(f"https://www.youtube.com/watch?v={settings.currently_playing.split('|')[1]}")
+        audio = d[0]
+        settings.video_length = d[1]
 
     if not vc.is_playing():
         settings.starting_time = time.time()
@@ -48,7 +60,10 @@ async def stream_next_song(ctx, vc):
         color=discord.Color.magenta()
     )
 
-    await ctx.send(embed=embed)
+    if not settings.bad_connection_mode:
+        await ctx.send(embed=embed)
+    else:
+        await message.edit(embed=embed)
 
 async def play_next_song(ctx, vc):
     if not settings.playback:
@@ -87,10 +102,11 @@ async def play(ctx):
     if not ctx.voice_client:
         await ctx.author.voice.channel.connect()
 
-    """
-    if ctx.voice_client is not ctx.author.voice.channel:
+
+    if ctx.voice_client.channel is not ctx.author.voice.channel:
+        await ctx.voice_client.disconnect()
         await ctx.author.voice.channel.connect()
-    """
+
 
     if not ctx.voice_client.is_playing() and settings.stream:
         settings.playback = True

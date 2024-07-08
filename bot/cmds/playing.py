@@ -12,7 +12,11 @@ def seconds_to_time_format(seconds):
 
 def get_elapsed_time_string():
     elapsed_time = 0
-    song_length = math.ceil(get_video_length(settings.currently_playing))
+
+    if not settings.streaming:
+        song_length = math.ceil(get_video_length(settings.currently_playing))
+    else:
+        song_length = math.ceil(settings.video_length)
 
     if settings.is_paused:
         elapsed_time = settings.time_elapsed

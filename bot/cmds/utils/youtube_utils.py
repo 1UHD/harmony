@@ -83,7 +83,7 @@ def search_youtube(query: str) -> str:
 
     return f"https://www.youtube.com/watch?v={video_ids[0]}"
 
-def stream_audio(youtube_link: str) -> discord.FFmpegPCMAudio:
+def stream_audio(youtube_link: str) -> list:
     ylp_settings = {
         "format" : "bestaudio/best",
         'postprocessors': [{
@@ -96,5 +96,6 @@ def stream_audio(youtube_link: str) -> discord.FFmpegPCMAudio:
     }
     with yt_dlp.YoutubeDL(ylp_settings) as ydl:
         info_dict = ydl.extract_info(youtube_link, download=False)
+
         audio_url = info_dict['url']
-        return discord.FFmpegPCMAudio(audio_url, before_options='-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5')
+        return [discord.FFmpegPCMAudio(audio_url, before_options='-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'), info_dict["duration"]]

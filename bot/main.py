@@ -2,11 +2,19 @@ import discord
 from settings import CMDS_DIR, COGS_DIR, TOKEN, LOGO
 import colorama as col
 from discord.ext import commands
+import atexit
+
+async def exit_handler() -> None:
+    for voice_client in bot.voice_clients:
+        await voice_client.disconnect()
+
+    print("[DEBUG] Disconnected all voice clients before exiting to prevent errors.")
 
 def run() -> None:
     intents = discord.Intents.all()
     activity = discord.Game("/help")
 
+    global bot
     bot = commands.Bot(command_prefix=".", activity=activity, intents=intents, help_command=None, case_insensitive=False)
 
     @bot.event

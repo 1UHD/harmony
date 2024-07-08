@@ -1,6 +1,8 @@
 import discord
 from settings import CMDS_DIR, COGS_DIR
 from discord.ext import commands
+import sys
+from cmds.utils.control_utils import send_success_embed
 
 class reloading_commands(commands.Cog):
     def __init__(self, bot):
@@ -45,6 +47,14 @@ class reloading_commands(commands.Cog):
         await self.bot.tree.sync()
         print("[SYSTEM] Bot tree reloaded")
         await ctx.send(embed=embed)
+
+    @commands.hybrid_command(name="shutdown", description="Shuts down the bot.")
+    async def shutdown(self, ctx):
+        for voice_client in self.bot.voice_clients:
+            await voice_client.disconnect()
+
+        await send_success_embed(ctx, "Shutting down.")
+        sys.exit()
 
 async def setup(bot):
     await bot.add_cog(reloading_commands(bot))

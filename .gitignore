@@ -3,6 +3,7 @@
 
 node_modules
 bot/config.py
+bot/script.py
 bot/__pycache__/
 bot/cmds/__pycache__/
 audio/__pycache__/

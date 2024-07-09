@@ -38,12 +38,15 @@ async def stream_next_song(ctx, vc):
         ))
 
     if not settings.is_looped:
+        print("this got executed (1)")
         d = stream_audio(f"https://www.youtube.com/watch?v={settings.stream[0].split('|')[1]}")
+        print("this god executed too (heyyy)")
         audio = d[0]
         settings.video_length = d[1]
 
         settings.currently_playing = settings.stream[0]
         del settings.stream[0]
+        await  ctx.send("if u see this and the song u want isnt playing then sum ting is wong")
     else:
         d = stream_audio(f"https://www.youtube.com/watch?v={settings.currently_playing.split('|')[1]}")
         audio = d[0]
@@ -52,7 +55,7 @@ async def stream_next_song(ctx, vc):
     if not vc.is_playing():
         settings.starting_time = time.time()
         settings.time_elapsed = 0
-        vc.play(audio, after=lambda e: ctx.bot.loop.create_task(play_next_song(ctx, vc)))
+        vc.play(audio, after=lambda e: ctx.bot.loop.create_task(stream_next_song(ctx, vc)))
 
     embed = discord.Embed(
         title="Song playing:",
@@ -83,7 +86,7 @@ async def play_next_song(ctx, vc):
     if not vc.is_playing():
         settings.starting_time = time.time()
         settings.time_elapsed = 0
-        vc.play(audio, after=lambda e: ctx.bot.loop.create_task(stream_next_song(ctx, vc)))
+        vc.play(audio, after=lambda e: ctx.bot.loop.create_task(play_next_song(ctx, vc)))
 
         embed = discord.Embed(
             title="Song playing:",

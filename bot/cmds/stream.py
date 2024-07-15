@@ -7,7 +7,7 @@ async def stream(ctx):
     if settings.stream or settings.currently_playing:
         embed = discord.Embed(
             title="Current playlist:",
-            description=f"Now - **{settings.currently_playing.split('|')[0]}**" + "".join(' _(Looped)_\n' if settings.is_looped else '\n') + "\n".join(f"- {i.split('|')[0]}" for i in settings.stream),
+            description=f"Now - **{settings.currently_playing.split('<|||>')[0]}**" + "".join(' _(Looped)_\n' if settings.is_looped else '\n') + "\n".join(f"- {i.split('<|||>')[0]}" for i in settings.stream),
             color=discord.Color.magenta()
         )
         await ctx.send(embed=embed)

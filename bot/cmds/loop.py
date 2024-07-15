@@ -15,10 +15,10 @@ async def loop(ctx):
     
     if settings.is_looped:
         settings.is_looped = False
-        await send_success_embed(ctx, f"Unlooped {settings.currently_playing.split('|')[0]}")
+        await send_success_embed(ctx, f"Unlooped {settings.currently_playing.split('<|||>')[0]}")
     else:
         settings.is_looped = True
-        await send_success_embed(ctx, f"Looped {settings.currently_playing.split('|')[0]}")
+        await send_success_embed(ctx, f"Looped {settings.currently_playing.split('<|||>')[0]}")
     
 async def setup(bot):
     bot.add_command(loop)

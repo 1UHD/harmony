@@ -18,7 +18,7 @@ def download_url(youtube_link: str) -> str:
             }],
             'noplaylist': True,
             'quiet': True,
-            'outtmpl': __file__.replace("\\", "/").replace("bot/cmds/utils/youtube_utils.py", "downloaded") + f"/%(title)s|{video_id}",
+            'outtmpl': __file__.replace("\\", "/").replace("bot/cmds/utils/youtube_utils.py", "downloaded") + f"/%(title)s<|||>{video_id}",
         }
     try:
         with yt_dlp.YoutubeDL(ylp_settings) as ydl:
@@ -44,7 +44,7 @@ def check_video_name(youtube_link: str) -> str:
     if title == "":
         return "unavailable"
 
-    return title + f"|{video_id}"
+    return title + f"<|||>{video_id}"
 
 def check_if_already_downloaded(youtube_link: str) -> bool:
     title = check_video_name(youtube_link=youtube_link)

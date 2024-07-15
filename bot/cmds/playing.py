@@ -45,7 +45,7 @@ async def playing(ctx):
 
     embed = discord.Embed(
         title="Currently playing:",
-        description=f"**{settings.currently_playing.split('|')[0]}**\n{get_elapsed_time_string()}\n_Loop:_ {'yes' if settings.is_looped else 'no'} | _Paused:_ {'yes' if settings.is_paused else 'no'}",
+        description=f"**{settings.currently_playing.split('<|||>')[0]}**\n{get_elapsed_time_string()}\n_Loop:_ {'yes' if settings.is_looped else 'no'} | _Paused:_ {'yes' if settings.is_paused else 'no'}",
         color=discord.Color.magenta()
     )
 

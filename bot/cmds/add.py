@@ -18,7 +18,7 @@ async def youtube_url(ctx, url):
     if settings.streaming:
         video_name = check_video_name(url)
         stream.append(video_name)
-        await send_success_embed(ctx, f"Added {video_name.split('|')[0]} to stream.")
+        await send_success_embed(ctx, f"Added {video_name.split('<|||>')[0]} to stream.")
         return
 
     already_downloaded = check_if_already_downloaded(url)
@@ -27,7 +27,7 @@ async def youtube_url(ctx, url):
         video_name = already_downloaded[1]
         stream.append(video_name)
 
-        await send_success_embed(ctx, f"Added {video_name.split('|')[0]} to stream.")
+        await send_success_embed(ctx, f"Added {video_name.split('<|||>')[0]} to stream.")
 
     else:
         await send_progress_embed(ctx, f"Downloading song. Bitrate: {bitrate}")
@@ -40,7 +40,7 @@ async def youtube_url(ctx, url):
 
             embed = discord.Embed(
                 title="Song added to stream.",
-                description=f"{video_name.split('|')[0]}",
+                description=f"{video_name.split('<|||>')[0]}",
                 color=discord.Color.magenta()
             )
             embed.set_thumbnail(url=get_youtube_thumbnail(url))
@@ -63,7 +63,7 @@ async def search(ctx: commands.Context, title):
     if settings.streaming:
         video_name = check_video_name(result)
         stream.append(video_name)
-        await send_success_embed(ctx, f"Added {video_name.split('|')[0]} to stream.")
+        await send_success_embed(ctx, f"Added {video_name.split('<|||>')[0]} to stream.")
         return
 
     already_downloaded = check_if_already_downloaded(result)
@@ -72,7 +72,7 @@ async def search(ctx: commands.Context, title):
         video_name = already_downloaded[1]
         stream.append(video_name)
 
-        await send_success_embed(ctx, f"Added {video_name.split('|')[0]} to stream.")
+        await send_success_embed(ctx, f"Added {video_name.split('<|||>')[0]} to stream.")
 
     else:
         await send_progress_embed(ctx, f"Downloading song. Bitrate: {bitrate}")
@@ -85,7 +85,7 @@ async def search(ctx: commands.Context, title):
 
             embed = discord.Embed(
                 title="Song added to stream.",
-                description=f"{video_name.split('|')[0]}",
+                description=f"{video_name.split('<|||>')[0]}",
                 color=discord.Color.magenta()
             )
             embed.set_thumbnail(url=get_youtube_thumbnail(result))

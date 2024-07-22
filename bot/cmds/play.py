@@ -38,15 +38,12 @@ async def stream_next_song(ctx, vc):
         ))
 
     if not settings.is_looped:
-        print("this got executed (1)")
         d = stream_audio(f"https://www.youtube.com/watch?v={settings.stream[0].split('<|||>')[1]}")
-        print("this god executed too (heyyy)")
         audio = d[0]
         settings.video_length = d[1]
 
         settings.currently_playing = settings.stream[0]
         del settings.stream[0]
-        await  ctx.send("if u see this and the song u want isnt playing then sum ting is wong")
     else:
         d = stream_audio(f"https://www.youtube.com/watch?v={settings.currently_playing.split('<|||>')[1]}")
         audio = d[0]
